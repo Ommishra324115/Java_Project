@@ -4,9 +4,9 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/StudentDBS";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/DATABSE_NAME";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "Ommishra@123";
+    private static final String PASSWORD = "PASSWORD";
 
     public static Connection getConnection() {
         Connection connection = null;
