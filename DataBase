@@ -1,0 +1,336 @@
+CREATE DATABASE StudentDBS ; 
+use StudentDBS ;
+
+CREATE TABLE users (
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  roll_no VARCHAR(50) UNIQUE NOT NULL,     
+  password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE students (
+  student_id INT AUTO_INCREMENT PRIMARY KEY,
+  roll_no VARCHAR(50) UNIQUE NOT NULL,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100),
+  course VARCHAR(50),
+  branch VARCHAR(50),
+  semester INT,
+  email VARCHAR(150),
+  phone VARCHAR(20),
+  FOREIGN KEY (roll_no) REFERENCES users(roll_no)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
+CREATE TABLE branches (
+  branch VARCHAR(50) PRIMARY KEY
+);
+
+INSERT INTO branches (branch) VALUES
+('CSE'),
+('ECE'),
+('ME');
+
+ALTER TABLE students
+ADD CONSTRAINT fk_students_branch
+FOREIGN KEY (branch) REFERENCES branches(branch)
+  ON UPDATE CASCADE
+  ON DELETE SET NULL;
+
+
+
+CREATE TABLE marks (
+  mark_id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id INT NOT NULL,
+   roll_no VARCHAR(50)  NOT NULL,
+  subject_name VARCHAR(100) NOT NULL,
+  max_marks INT DEFAULT 100,
+  marks_obtained INT,
+  exam_term VARCHAR(50),
+    FOREIGN KEY (roll_no) REFERENCES users(roll_no)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
+
+
+CREATE TABLE fees (
+  fee_id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id INT UNIQUE NOT NULL,
+  roll_no VARCHAR(50) NOT NULL,
+  total_amount DECIMAL(10,2),
+  paid_amount DECIMAL(10,2) DEFAULT 0,
+  due_date DATE,
+  status ENUM('PAID','PARTIAL','DUE') DEFAULT 'DUE',
+  receipt_no VARCHAR(50),
+    FOREIGN KEY (roll_no) REFERENCES users(roll_no)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
+CREATE TABLE faculty (
+roll_no VARCHAR(50)  NOT NULL,
+  faculty_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  department VARCHAR(100),
+  email VARCHAR(150),
+  phone VARCHAR(20),
+   FOREIGN KEY (roll_no) REFERENCES users(roll_no)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
+CREATE TABLE timetable (
+  tt_id INT AUTO_INCREMENT PRIMARY KEY,
+  branch VARCHAR(50) NOT NULL,
+  semester INT,
+  day_of_week VARCHAR(10),
+  start_time TIME,
+  end_time TIME,
+  subject VARCHAR(100),
+  faculty_id INT,
+  FOREIGN KEY (branch) REFERENCES branches(branch)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  FOREIGN KEY (faculty_id) REFERENCES faculty(faculty_id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+);
+
+
+CREATE TABLE hostel (
+roll_no VARCHAR(50)  NOT NULL,
+  hostel_id INT AUTO_INCREMENT PRIMARY KEY,
+  student_id INT,
+  hostel_name VARCHAR(100),
+  room_no VARCHAR(50),
+  mess_info VARCHAR(150),
+   FOREIGN KEY (roll_no) REFERENCES users(roll_no)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
+
+
+CREATE TABLE activities (
+roll_no VARCHAR(50)  NOT NULL,
+  activity_id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(100),
+  description TEXT,
+  start_date DATE,
+  end_date DATE,
+  venue VARCHAR(100),
+  FOREIGN KEY (roll_no) REFERENCES users(roll_no)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+ALTER TABLE activities
+ADD COLUMN branch VARCHAR(50);
+
+ALTER TABLE activities
+ADD CONSTRAINT fk_activities_branch
+FOREIGN KEY (branch) REFERENCES branches(branch)
+  ON UPDATE CASCADE
+  ON DELETE SET NULL;
+
+INSERT INTO users (roll_no, password) VALUES
+('STU001', 'Aman@123'),
+('STU002', 'Akshat@123'),
+('STU003', 'Anand@123'),
+('STU004', 'Ayush@123'),
+('STU005', 'Devansh@123'),
+('STU006', 'Om@123'),
+('STU007', 'Saurabh@123'),
+('STU008', 'Vishal@123'),
+('STU009', 'Vishnu@123'),
+('STU010', 'Vivek@123');
+
+INSERT INTO students (roll_no, first_name, last_name, course, branch, semester, email, phone) VALUES
+('STU001', 'Aman', 'Kumar', 'B.Tech', 'CSE', 3, 'aman.kumar@mmmut.ac.in', '9000000001'),
+('STU002', 'Akshat', 'Vishnoi', 'B.Tech', 'ECE', 3, 'akshat.vishnoi@mmmut.ac.in', '9000000002'),
+('STU003', 'Anand', 'Mohan', 'B.Tech', 'ME', 3, 'anand.mohan@mmmut.ac.in', '9000000003'),
+('STU004', 'Ayush', 'Gond', 'B.Tech', 'CSE', 3, 'ayush.gond@mmmut.ac.in', '9000000004'),
+('STU005', 'Devansh', 'Yadav', 'B.Tech', 'ECE', 3, 'devansh.yadav@mmmut.ac.in', '9000000005'),
+('STU006', 'Om', 'Mishra', 'B.Tech', 'ME', 3, 'om.mishra@mmmut.ac.in', '9000000006'),
+('STU007', 'Saurabh', 'Kumar', 'B.Tech', 'CSE', 3, 'saurabh.kumar@mmmut.ac.in', '9000000007'),
+('STU008', 'Vishal', 'Kumar Pal', 'B.Tech', 'ECE', 3, 'vishal.kumarpal@mmmut.ac.in', '9000000008'),
+('STU009', 'Vishnu', 'Singh', 'B.Tech', 'ME', 3, 'vishnu.singh@mmmut.ac.in', '9000000009'),
+('STU010', 'Vivek', 'Kumar', 'B.Tech', 'CSE', 3, 'vivek.kumar@mmmut.ac.in', '9000000010');
+
+INSERT INTO marks (student_id, roll_no, subject_name, max_marks, marks_obtained, exam_term) VALUES
+(1, 'STU001', 'Java', 100, 78, 'Midterm'),
+(1, 'STU001', 'DSA', 100, 82, 'Midterm'),
+(1, 'STU001', 'TOC', 100, 75, 'Midterm'),
+(2, 'STU002', 'Java', 100, 70, 'Midterm'),
+(2, 'STU002', 'DSA', 100, 68, 'Midterm'),
+(2, 'STU002', 'TOC', 100, 72, 'Midterm'),
+(3, 'STU003', 'Java', 100, 65, 'Midterm'),
+(3, 'STU003', 'DSA', 100, 70, 'Midterm'),
+(3, 'STU003', 'TOC', 100, 60, 'Midterm'),
+(4, 'STU004', 'Java', 100, 80, 'Midterm'),
+(4, 'STU004', 'DSA', 100, 85, 'Midterm'),
+(4, 'STU004', 'TOC', 100, 78, 'Midterm'),
+(5, 'STU005', 'Java', 100, 68, 'Midterm'),
+(5, 'STU005', 'DSA', 100, 72, 'Midterm'),
+(5, 'STU005', 'TOC', 100, 70, 'Midterm'),
+(6, 'STU006', 'Java', 100, 95, 'Midterm'),
+(6, 'STU006', 'DSA', 100, 98, 'Midterm'),
+(6, 'STU006', 'TOC', 100, 97, 'Midterm'),
+(7, 'STU007', 'Java', 100, 75, 'Midterm'),
+(7, 'STU007', 'DSA', 100, 80, 'Midterm'),
+(7, 'STU007', 'TOC', 100, 74, 'Midterm'),
+(8, 'STU008', 'Java', 100, 70, 'Midterm'),
+(8, 'STU008', 'DSA', 100, 72, 'Midterm'),
+(8, 'STU008', 'TOC', 100, 68, 'Midterm'),
+(9, 'STU009', 'Java', 100, 60, 'Midterm'),
+(9, 'STU009', 'DSA', 100, 65, 'Midterm'),
+(9, 'STU009', 'TOC', 100, 62, 'Midterm'),
+(10, 'STU010', 'Java', 100, 78, 'Midterm'),
+(10, 'STU010', 'DSA', 100, 80, 'Midterm'),
+(10, 'STU010', 'TOC', 100, 76, 'Midterm');
+
+INSERT INTO fees (student_id, roll_no, total_amount, paid_amount, due_date, status, receipt_no) VALUES
+(1, 'STU001', 100000, 100000, '2025-12-31', 'PAID', 'REC001'),
+(2, 'STU002', 100000, 50000, '2025-12-31', 'PARTIAL', 'REC002'),
+(3, 'STU003', 100000, 0, '2025-12-31', 'DUE', 'REC003'),
+(4, 'STU004', 100000, 75000, '2025-12-31', 'PARTIAL', 'REC004'),
+(5, 'STU005', 100000, 100000, '2025-12-31', 'PAID', 'REC005'),
+(6, 'STU006', 100000, 100000, '2025-12-31', 'PAID', 'REC006'),
+(7, 'STU007', 100000, 30000, '2025-12-31', 'PARTIAL', 'REC007'),
+(8, 'STU008', 100000, 0, '2025-12-31', 'DUE', 'REC008'),
+(9, 'STU009', 100000, 60000, '2025-12-31', 'PARTIAL', 'REC009'),
+(10, 'STU010', 100000, 100000, '2025-12-31', 'PAID', 'REC010');
+
+INSERT INTO faculty (roll_no, name, department, email, phone) VALUES
+('STU001', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU001', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU001', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003'),
+
+('STU002', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU002', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU002', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003'),
+
+('STU003', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU003', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU003', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003'),
+
+('STU004', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU004', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU004', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003'),
+
+('STU005', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU005', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU005', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003'),
+
+('STU006', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU006', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU006', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003'),
+
+('STU007', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU007', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU007', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003'),
+
+('STU008', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU008', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU008', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003'),
+
+('STU009', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU009', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU009', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003'),
+
+('STU010', 'Amit Kr Dwivedi', 'CSE', 'amit.dwivedi@mmmut.ac.in', '8000000001'),
+('STU010', 'Rohit Kumar Tiwari', 'CSE', 'rohit.tiwari@mmmut.ac.in', '8000000002'),
+('STU010', 'Pradeep Kumar Singh', 'CSE', 'pradeep.singh@mmmut.ac.in', '8000000003');
+
+UPDATE faculty SET department = 'CSE' WHERE roll_no IN ('STU001', 'STU004', 'STU007', 'STU010');
+UPDATE faculty SET department = 'ECE' WHERE roll_no IN ('STU002', 'STU005', 'STU008');
+UPDATE faculty SET department = 'ME'  WHERE roll_no IN ('STU003', 'STU006', 'STU009');
+
+
+
+
+-- CSE Timetable
+INSERT INTO timetable (branch, semester, day_of_week, start_time, end_time, subject, faculty_id) VALUES
+('CSE', 3, 'Monday', '09:00:00', '10:00:00', 'Java', 1),
+('CSE', 3, 'Monday', '10:00:00', '11:00:00', 'DSA', 2),
+('CSE', 3, 'Monday', '11:00:00', '12:00:00', 'TOC', 3),
+('CSE', 3, 'Tuesday', '09:00:00', '10:00:00', 'DSA', 2),
+('CSE', 3, 'Tuesday', '10:00:00', '11:00:00', 'Java', 1),
+('CSE', 3, 'Tuesday', '11:00:00', '12:00:00', 'TOC', 3),
+('CSE', 3, 'Wednesday', '09:00:00', '10:00:00', 'TOC', 3),
+('CSE', 3, 'Wednesday', '10:00:00', '11:00:00', 'Java', 1),
+('CSE', 3, 'Wednesday', '11:00:00', '12:00:00', 'DSA', 2),
+('CSE', 3, 'Thursday', '09:00:00', '10:00:00', 'Java', 1),
+('CSE', 3, 'Thursday', '10:00:00', '11:00:00', 'TOC', 3),
+('CSE', 3, 'Thursday', '11:00:00', '12:00:00', 'DSA', 2),
+('CSE', 3, 'Friday', '09:00:00', '10:00:00', 'DSA', 2),
+('CSE', 3, 'Friday', '10:00:00', '11:00:00', 'TOC', 3),
+('CSE', 3, 'Friday', '11:00:00', '12:00:00', 'Java', 1);
+
+-- ECE Timetable
+INSERT INTO timetable (branch, semester, day_of_week, start_time, end_time, subject, faculty_id) VALUES
+('ECE', 3, 'Monday', '09:00:00', '10:00:00', 'Java', 1),
+('ECE', 3, 'Monday', '10:00:00', '11:00:00', 'DSA', 2),
+('ECE', 3, 'Monday', '11:00:00', '12:00:00', 'TOC', 3),
+('ECE', 3, 'Tuesday', '09:00:00', '10:00:00', 'TOC', 3),
+('ECE', 3, 'Tuesday', '10:00:00', '11:00:00', 'Java', 1),
+('ECE', 3, 'Tuesday', '11:00:00', '12:00:00', 'DSA', 2),
+('ECE', 3, 'Wednesday', '09:00:00', '10:00:00', 'DSA', 2),
+('ECE', 3, 'Wednesday', '10:00:00', '11:00:00', 'Java', 1),
+('ECE', 3, 'Wednesday', '11:00:00', '12:00:00', 'TOC', 3),
+('ECE', 3, 'Thursday', '09:00:00', '10:00:00', 'Java', 1),
+('ECE', 3, 'Thursday', '10:00:00', '11:00:00', 'TOC', 3),
+('ECE', 3, 'Thursday', '11:00:00', '12:00:00', 'DSA', 2),
+('ECE', 3, 'Friday', '09:00:00', '10:00:00', 'TOC', 3),
+('ECE', 3, 'Friday', '10:00:00', '11:00:00', 'DSA', 2),
+('ECE', 3, 'Friday', '11:00:00', '12:00:00', 'Java', 1);
+
+-- ME Timetable
+INSERT INTO timetable (branch, semester, day_of_week, start_time, end_time, subject, faculty_id) VALUES
+('ME', 3, 'Monday', '09:00:00', '10:00:00', 'Java', 1),
+('ME', 3, 'Monday', '10:00:00', '11:00:00', 'TOC', 3),
+('ME', 3, 'Monday', '11:00:00', '12:00:00', 'DSA', 2),
+('ME', 3, 'Tuesday', '09:00:00', '10:00:00', 'DSA', 2),
+('ME', 3, 'Tuesday', '10:00:00', '11:00:00', 'Java', 1),
+('ME', 3, 'Tuesday', '11:00:00', '12:00:00', 'TOC', 3),
+('ME', 3, 'Wednesday', '09:00:00', '10:00:00', 'TOC', 3),
+('ME', 3, 'Wednesday', '10:00:00', '11:00:00', 'Java', 1),
+('ME', 3, 'Wednesday', '11:00:00', '12:00:00', 'DSA', 2),
+('ME', 3, 'Thursday', '09:00:00', '10:00:00', 'Java', 1),
+('ME', 3, 'Thursday', '10:00:00', '11:00:00', 'TOC', 3),
+('ME', 3, 'Thursday', '11:00:00', '12:00:00', 'DSA', 2),
+('ME', 3, 'Friday', '09:00:00', '10:00:00', 'DSA', 2),
+('ME', 3, 'Friday', '10:00:00', '11:00:00', 'Java', 1),
+('ME', 3, 'Friday', '11:00:00', '12:00:00', 'TOC', 3);
+
+
+INSERT INTO hostel (student_id, roll_no, hostel_name, room_no, mess_info) VALUES
+
+(1, 'STU001', 'Tagore Bhawan', 'T101', 'Veg'),
+(2, 'STU002', 'Tagore Bhawan', 'T102', 'Non-Veg'),
+(3, 'STU003', 'Tagore Bhawan', 'T103', 'Veg'),
+(4, 'STU004', 'Tagore Bhawan', 'T104', 'Veg'),
+(5, 'STU005', 'Tagore Bhawan', 'T105', 'Non-Veg'),
+
+
+(6, 'STU006', 'VS Bhawan', 'V201', 'Veg'),
+(7, 'STU007', 'VS Bhawan', 'V202', 'Non-Veg'),
+(8, 'STU008', 'VS Bhawan', 'V203', 'Veg'),
+(9, 'STU009', 'VS Bhawan', 'V204', 'Non-Veg'),
+(10, 'STU010', 'VS Bhawan', 'V205', 'Veg');
+
+
+INSERT INTO activities (roll_no, branch, title, description, start_date, end_date, venue) VALUES
+
+('STU001', 'CSE', 'CodeSprint 2025', 'A coding competition focused on DSA and algorithms.', '2025-10-20', '2025-10-21', 'Computer Lab - Block A'),
+('STU002', 'CSE', 'AI & ML Workshop', 'A hands-on workshop on Artificial Intelligence and Machine Learning basics.', '2025-11-05', '2025-11-06', 'Seminar Hall - CSE Dept'),
+('STU004', 'CSE', 'Tech Symposium', 'Paper presentation and project demonstration event for CSE students.', '2025-11-15', '2025-11-16', 'Auditorium'),
+
+('STU005', 'ECE', 'CircuitMania', 'Competition on designing and debugging circuits.', '2025-10-22', '2025-10-22', 'Electronics Lab'),
+('STU008', 'ECE', 'IoT Innovation Fest', 'Exhibition and workshop on IoT devices and applications.', '2025-11-10', '2025-11-11', 'ECE Seminar Hall'),
+('STU002', 'ECE', 'RoboWars', 'Robotics combat competition among ECE students.', '2025-12-01', '2025-12-02', 'Main Ground'),
+
+
+('STU003', 'ME', 'AutoCAD Challenge', 'Design contest for mechanical components using AutoCAD.', '2025-10-25', '2025-10-25', 'ME Lab 1'),
+('STU006', 'ME', 'Engine Disassembly Workshop', 'Practical session on internal combustion engine parts and assembly.', '2025-11-07', '2025-11-07', 'Mechanical Workshop'),
+('STU009', 'ME', 'MECH-A-THON', '24-hour hackathon for mechanical design innovation.', '2025-12-05', '2025-12-06', 'Innovation Center');
